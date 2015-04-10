@@ -849,6 +849,16 @@ static BOOL sOnlyTrustAnchorCerts;
     }
 }
 
+
+static SecTrustResultType(^evaluationBlock)(SecTrustRef trust); // fgk-sgd
+
++ (void) provideRecoverableTrustEvaluationBlock: (SecTrustResultType(^)(SecTrustRef trust))block { // fgk-sgd
+    @synchronized(self) {
+        evaluationBlock = block;
+    }
+}
+
+
 - (BOOL) checkSSLServerTrust: (SecTrustRef)trust
                      forHost: (NSString*)host port: (UInt16)port
 {
@@ -881,9 +891,16 @@ static BOOL sOnlyTrustAnchorCerts;
             Warn(@"%@: SecTrustEvaluate failed with err %d", self, (int)err);
             return NO;
         }
+
         if (result != kSecTrustResultProceed && result != kSecTrustResultUnspecified) {
-            Warn(@"%@: SSL cert is not trustworthy (result=%d)", self, result);
-            return NO;
+            if ((result == kSecTrustResultRecoverableTrustFailure) && (evaluationBlock)) { // ~~fgk-sgd~~ allow additional check.
+                result = evaluationBlock(trust);
+            }
+            if ((err) || (result != kSecTrustResultProceed && result != kSecTrustResultUnspecified)) {
+                Warn(@"%@: SSL cert is not trustworthy (result=%d)", self, result);
+                return NO;
+            }
+
         }
     }
 

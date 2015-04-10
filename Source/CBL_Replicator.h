@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <Security/Security.h>
+
 
 @class CBLDatabase, CBL_Revision, CBL_RevisionList, CBLBatcher, CBLReachability, CBLCookieStorage;
 @protocol CBLAuthorizer;
@@ -47,6 +49,8 @@ extern NSString* CBL_ReplicatorStoppedNotification;
 
 /** Adds to (or replaces) the system list of trusted root certs. */
 + (void) setAnchorCerts: (NSArray*)certs onlyThese: (BOOL)onlyThese;
+
++ (void) provideRecoverableTrustEvaluationBlock: (SecTrustResultType(^)(SecTrustRef trust))block;
 
 - (instancetype) initWithDB: (CBLDatabase*)db
                      remote: (NSURL*)remote

@@ -7,6 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <Security/Security.h>
+
+
 @class CBLDatabase;
 @protocol CBLAuthenticator;
 
@@ -131,6 +134,8 @@ typedef NS_ENUM(unsigned, CBLReplicationStatus) {
     @param onlyThese  If NO, the given certs are appended to the system's built-in list of trusted
         root certs; if YES, it replaces them (so *only* the given certs will be trusted.) */
 + (void) setAnchorCerts: (nullable NSArray*)certs onlyThese: (BOOL)onlyThese;
+
++ (void) provideRecoverableTrustEvaluationBlock: (SecTrustResultType(^)(SecTrustRef trust))block;
 
 /** The server's SSL certificate. This will be NULL until the first HTTPS response is received
     from the server. */

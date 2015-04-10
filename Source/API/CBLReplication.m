@@ -237,6 +237,9 @@ NSString* const kCBLReplicationChangeNotification = @"CBLReplicationChange";
     [CBL_Replicator setAnchorCerts: certs onlyThese: onlyThese];
 }
 
++ (void) provideRecoverableTrustEvaluationBlock: (SecTrustResultType(^)(SecTrustRef trust))block { // fgk-sgd
+    [CBL_Replicator provideRecoverableTrustEvaluationBlock:block];
+}
 
 #pragma mark - START/STOP:
 
